@@ -66,7 +66,6 @@ if st.sidebar.button("🔌 INITIALIZE LIVE BRIDGE", use_container_width=True):
                 ret = api.login(userid=api_key, password=api_secret, twoFA=totp_token, vendor_code=vendor_code, api_secret=api_secret, imei='12345')
                 st.session_state['api_instance'] = api
             else:
-                # Other brokers simulation route
                 ret = {'stat': 'Ok'}
             
             if ret and ret.get('stat') == 'Ok':
@@ -100,7 +99,6 @@ with col1:
         
     st.markdown("---")
     
-    # ORDER EXECUTION BUTTON
     if st.button("🚀 INSTANT BUY (CE/PE)", type="primary", use_container_width=True):
         if st.session_state['connected']:
             if st.session_state['broker'] in ["Flattrade", "Shoonya (Finvasia)"] and st.session_state['api_instance'] is not None:
