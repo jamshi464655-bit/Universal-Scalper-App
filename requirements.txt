@@ -1,4 +1,3 @@
 streamlit>=1.30.0
 pandas>=2.0.0
-yfinance>=0.2.35
-NorenRestApiPy @ git+https://github.com/Finvasia/NorenRestApiPy.git
+shoonya-shares-smartapi>=1.0.4
