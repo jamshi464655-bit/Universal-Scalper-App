@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import time
-import threading
 from NorenRestApiPy.NorenApi import NorenApi
 
 # Page configuration
@@ -58,7 +57,6 @@ vendor_code = st.sidebar.text_input("Vendor Code (For Shoonya/Flattrade)", value
 if st.sidebar.button("🔌 INITIALIZE LIVE BRIDGE", use_container_width=True):
     if api_key and api_secret:
         try:
-            # Flattrade-ഉം Shoonya-യും ലൈവ് കണക്ട് ചെയ്യാനുള്ള റിയൽ അൽഗോരിതം
             if selected_broker == "Flattrade":
                 api = BrokerNorenEngine(host_url='https://piconnect.flattrade.in/NorenWSTP/', ws_url='wss://piconnect.flattrade.in/NorenWSTP/')
                 ret = api.login(userid=api_key, password=api_secret, twoFA=totp_token, vendor_code=vendor_code, api_secret=api_secret, imei='12345')
@@ -68,7 +66,7 @@ if st.sidebar.button("🔌 INITIALIZE LIVE BRIDGE", use_container_width=True):
                 ret = api.login(userid=api_key, password=api_secret, twoFA=totp_token, vendor_code=vendor_code, api_secret=api_secret, imei='12345')
                 st.session_state['api_instance'] = api
             else:
-                # Dhan, Zerodha, Fyers എന്നിവ മറ്റ് ടോക്കൺ ഫോർമാറ്റുകളാണ് ഉപയോഗിക്കുന്നത് (UI Simulation Route)
+                # Other brokers simulation route
                 ret = {'stat': 'Ok'}
             
             if ret and ret.get('stat') == 'Ok':
@@ -86,10 +84,10 @@ if st.sidebar.button("🔌 INITIALIZE LIVE BRIDGE", use_container_width=True):
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.markdown('<div class="broker-card"><h3>🔥 OPTIONS QUICK ORDER PAD</h3></div>', unsafe_allow_html=True)
+    st.markdown('<div class="broker-card"><h3>🚀 QUICK ORDER PAD</h3></div>', unsafe_allow_html=True)
     
     exch = st.selectbox("Exchange Segment", ["NFO", "NSE"])
-    sym = st.text_input("Option Symbol", value="NIFTY28MAY26C22000", help="Enter exact symbol format recommended by your broker")
+    sym = st.text_input("Option Symbol", value="NIFTY28MAY26C22000")
     qty = st.number_input("Lot Size / Quantity", value=25, step=25)
     
     c1, c2, c3 = st.columns(3)
@@ -105,11 +103,9 @@ with col1:
     # ORDER EXECUTION BUTTON
     if st.button("🚀 INSTANT BUY (CE/PE)", type="primary", use_container_width=True):
         if st.session_state['connected']:
-            # Real execution for Flattrade / Shoonya
             if st.session_state['broker'] in ["Flattrade", "Shoonya (Finvasia)"] and st.session_state['api_instance'] is not None:
                 try:
                     api = st.session_state['api_instance']
-                    # ബ്രോക്കറിലേക്ക് മാർക്കറ്റ് ഓർഡർ ട്രാൻസ്മിറ്റ് ചെയ്യുന്നു
                     api.place_order(buy_or_sell='B', product_type='I', exchange=exch, 
                                     tradingsymbol=sym, quantity=str(qty), price_type='MKT')
                 except Exception as e:
@@ -127,7 +123,7 @@ with col1:
                 "Trailing": f"{trail_pts} Pts",
                 "Status": "RUNNING 🟢"
             })
-            st.success("🎯 Scalp Position Activated Successfully!")
+            st.success("🎯 Scalp Position Activated!")
         else:
             st.error("❌ Broker Connection is Offline! Please login from Sidebar.")
 
@@ -145,7 +141,6 @@ with col2:
         st.dataframe(pd.DataFrame(st.session_state['live_positions']), use_container_width=True, hide_index=True)
         
         if st.button("🛑 EMERGENCY EXIT ALL POSITIONS", type="primary", use_container_width=True):
-            # Real exit call for NorenAPI brokers
             if st.session_state['broker'] in ["Flattrade", "Shoonya (Finvasia)"] and st.session_state['api_instance'] is not None:
                 try:
                     api = st.session_state['api_instance']
